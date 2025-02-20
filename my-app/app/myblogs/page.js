@@ -82,7 +82,7 @@ export default function MyBlogsPage() {
           {myBlogs.length > 0 ? (
             myBlogs.map((post) => (
               <Box
-                key={post.id} // ✅ Using `post.id` because full blog details are fetched
+                key={post.id} 
                 component="a"
                 sx={{
                   width: "100%",

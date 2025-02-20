@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
+import { motion } from "framer-motion";
+import { TextField, Button, Box, Typography, Alert, CircularProgress, Dialog, DialogContent } from "@mui/material";
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import { useRegister } from "../../backend/blog";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@mui/material/styles"; // ✅ Use correct MUI theme import
 
 export default function Page() {
   const router = useRouter();
   const registerMutation = useRegister();
+  const theme = useTheme();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -16,6 +20,7 @@ export default function Page() {
   });
 
   const [error, setError] = useState("");
+  const [openModal, setOpenModal] = useState(false); // ✅ State for modal
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,7 +32,10 @@ export default function Page() {
 
     registerMutation.mutate(formData, {
       onSuccess: () => {
-        router.push("/connexion"); 
+        setOpenModal(true); // ✅ Show modal on success
+        setTimeout(() => {
+          router.push("/connexion"); // ✅ Redirect after 3 seconds
+        }, 3000);
       },
       onError: (err) => {
         setError(err.message);
@@ -108,6 +116,48 @@ export default function Page() {
           </a>
         </Typography>
       </Box>
+
+      {/* ✅ Pending Status Modal */}
+      <Dialog open={openModal} maxWidth="sm" fullWidth>
+        <DialogContent
+          component={motion.div}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            p: 4,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: theme.palette.info.main,
+              width: 70,
+              height: 70,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mx: "auto",
+              mb: 2,
+            }}
+          >
+            <CheckBoxOutlinedIcon sx={{ fontSize: 36, color: "white" }} />
+          </Box>
+
+          <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
+            Registration Successful
+          </Typography>
+
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Your account is in <strong>pending</strong> status. We will review your request and contact you soon.
+          </Typography>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

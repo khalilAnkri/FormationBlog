@@ -13,6 +13,7 @@ import Footer from "../components/Footer";
 import Link from "next/link";
 import { Pagination, Autoplay } from "swiper/modules";
 import Image from "next/image";
+import OurPartners from "@/components/OurPartners";
 
 export default function LandingPage() {
   const theme = useTheme();  
@@ -91,14 +92,14 @@ export default function LandingPage() {
           justifyContent: "center",
         }}
       />
-
+      <Link href="/connexion" passHref>
       <Button
         variant="contained"
         sx={{ mt: 3, bgcolor: theme.palette.secondary.main }}
         endIcon={<ArrowForwardIcon />}
       >
         Get Started
-      </Button>
+      </Button></Link>
     </Box>
 
     <Container sx={{ py: 8 }}>
@@ -205,7 +206,9 @@ export default function LandingPage() {
       </Paper>
     </Box>
 
-     
+            
+          
+       <OurPartners/>   
       <Footer />
     </div>
   );

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
 import { useBlogs, useAddBlog } from "../../backend/blog";
 import BlogCard from "../../components/BlogCard";
 import MyMiniDrawer from "../../components/MyMiniDrawer";
@@ -23,11 +22,12 @@ import {
   Container
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { theme } from "@/config/Theme";
 
 export default function BlogPage() {
- 
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);  
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { data: blogs = [], isLoading } = useBlogs();
   const { mutate: addBlog } = useAddBlog();
 
@@ -35,6 +35,20 @@ export default function BlogPage() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 6;
+  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+  const displayedBlogs = blogs.slice((currentPage - 1) * blogsPerPage, currentPage * blogsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
@@ -63,11 +77,10 @@ export default function BlogPage() {
     );
   };
 
-   if (!isLoggedIn) {
+  if (!isLoggedIn) {
     return <AuthRequired message="You need to log in to view blogs." redirectPath="/connexion" />;
   }
 
- 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", minHeight: "100vh", p: 3 }}>
       <MyMiniDrawer />
@@ -91,25 +104,50 @@ export default function BlogPage() {
             <CircularProgress />
           </Box>
         ) : (
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            {blogs.map((post) => (
-              <Box
-                key={post.id}
-                component="a"
-                sx={{
-                  width: "100%",
-                  mb: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textDecoration: "none",
-                  color: "black"
-                }}
+          <>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+              {displayedBlogs.map((post) => (
+                <Box
+                  key={post.id}
+                  component="a"
+                  sx={{
+                    width: "100%",
+                    mb: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textDecoration: "none",
+                    color: "black"
+                  }}
+                >
+                  <BlogCard post={post} />
+                </Box>
+              ))}
+            </Box>
+
+            {/* Pagination Controls */}
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 3, gap: 2 }}>
+              <Button
+                variant="contained"
+                startIcon={<NavigateBeforeIcon />}
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
               >
-                <BlogCard post={post} />
-              </Box>
-            ))}
-          </Box>
+                Previous
+              </Button>
+              <Typography variant="body1" sx={{ fontWeight: "bold", mt: 1 }}>
+                Page {currentPage} of {totalPages}
+              </Typography>
+              <Button
+                variant="contained"
+                endIcon={<NavigateNextIcon />}
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </Box>
+          </>
         )}
       </Paper>
 

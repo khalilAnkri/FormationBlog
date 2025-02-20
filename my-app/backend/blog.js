@@ -60,6 +60,7 @@ export const useLogin = () => {
 
 export const useBlogs = () => {
   const token = getAuthToken();  
+  console.log("token : ", token);
 
   return useQuery({
     queryKey: ["blogs"],

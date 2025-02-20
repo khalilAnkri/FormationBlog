@@ -1,19 +1,22 @@
 package com.backend.backend.Dto;
 
- 
-
-import lombok.*;
-
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+import com.backend.backend.Entities.Comment;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class BlogDTO {
     private Long id;
     private String title;
     private String content;
-    private String authorUsername;  
-    private LocalDateTime createdAt;
-    private List<CommentDTO> comments;  
-    private int likeCount;  
+    private String authorUsername;
+    private String createdAt;  
+    private int likeCount;
+    private int commentCount;
+    private List<Comment> comments = new ArrayList<>();  
+    private String status;
 }

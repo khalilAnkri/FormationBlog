@@ -3,6 +3,7 @@ package com.backend.backend.Services.ServiceImpl;
 import com.backend.backend.Dto.BlogDTO;
 import com.backend.backend.Entities.Blog;
 import com.backend.backend.Entities.User;
+import com.backend.backend.Enum.BlogStatus;
 import com.backend.backend.Mappers.BlogMapper;
 import com.backend.backend.Repositories.BlogRepository;
 import com.backend.backend.Repositories.UserRepository;
@@ -22,26 +23,33 @@ public class BlogServiceImpl implements BlogService {
     private final UserRepository userRepository;
     private final BlogMapper blogMapper;
 
+    // ✅ Return only APPROVED blogs
     @Override
     public List<BlogDTO> getAllBlogs() {
-        return blogRepository.findAll().stream()
-                .map(blogMapper::toBlogDTO)
+        return blogRepository.findByBlogStatus(BlogStatus.APPROVED).stream()
+                .map(blogMapper::toBlogDTO) // ✅ Use correct method
                 .collect(Collectors.toList());
     }
+    
 
+    // ✅ Ensure blog exists before returning
     @Override
     public BlogDTO getBlogById(Long blogId) {
-        Optional<Blog> blog = blogRepository.findById(blogId);
-        return blog.map(blogMapper::toBlogDTO).orElse(null);
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+        return blogMapper.toBlogDTO(blog);
     }
 
+    // ✅ Ensure blog is PENDING by default when created
     @Override
     public BlogDTO createBlog(Long userId, BlogDTO blogDTO) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Blog blog = new Blog();
-        blog.setTitle(blogDTO.getTitle());
-        blog.setContent(blogDTO.getContent());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Blog blog = blogMapper.toEntity(blogDTO); // ✅ Use Mapper to convert DTO to Entity
         blog.setAuthor(user);
+        blog.setBlogStatus(BlogStatus.PENDING); // ✅ Default to PENDING
+
         blogRepository.save(blog);
         return blogMapper.toBlogDTO(blog);
     }
@@ -51,12 +59,19 @@ public class BlogServiceImpl implements BlogService {
         blogRepository.deleteById(blogId);
     }
 
- 
+    // ✅ Ensure only APPROVED blogs are returned
     @Override
     public List<BlogDTO> getMyBlogs(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return blogRepository.findByAuthor(user).stream()
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return blogRepository.findByAuthorAndBlogStatus(user, BlogStatus.APPROVED).stream()
                 .map(blogMapper::toBlogDTO)
                 .collect(Collectors.toList());
+    }
+
+    // ✅ Get all APPROVED blogs using existing method (Avoids Duplicate Logic)
+    public List<BlogDTO> getAllApprovedBlogs() {
+        return getAllBlogs();
     }
 }

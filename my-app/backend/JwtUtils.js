@@ -14,7 +14,7 @@ export const getAuthToken = () => {
           .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
           .join("")
       );
-  
+      console.log("decoded token ", jsonPayload)
       return JSON.parse(jsonPayload);
     } catch (error) {
       console.error("Error decoding token:", error);

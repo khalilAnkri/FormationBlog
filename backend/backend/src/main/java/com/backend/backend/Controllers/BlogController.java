@@ -36,13 +36,13 @@ public class BlogController {
         return ResponseEntity.ok(blog);
     }
 
-    // ✅ Create Blog (Requires Authentication)
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
+    @PreAuthorize("isAuthenticated() and authentication.principal.accountStatus.name() == 'ACTIVE'")
     public ResponseEntity<BlogDTO> createBlog(@RequestParam Long userId, @RequestBody BlogDTO blogDTO) {
-        return ResponseEntity.ok(blogService.createBlog(userId, blogDTO));
+        BlogDTO createdBlog = blogService.createBlog(userId, blogDTO);
+        return ResponseEntity.ok(createdBlog);
     }
-
+    
     // ✅ Delete Blog (Requires Authentication)
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")

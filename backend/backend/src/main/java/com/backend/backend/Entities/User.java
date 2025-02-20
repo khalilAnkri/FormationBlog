@@ -5,8 +5,15 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.backend.backend.Enum.AccountStatus;
+import com.backend.backend.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties({"blogs"})
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class User {
     
@@ -24,18 +31,16 @@ public class User {
     private String password;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now(); // ✅ Automatically set timestamp
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Enumerated(EnumType.STRING) // ✅ Store as String in DB
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role; // ✅ Added Role (USER, ADMIN)
+    private Role role = Role.USER;  
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus = AccountStatus.PENDING; 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Blog> blogs;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Like> likes;
 }

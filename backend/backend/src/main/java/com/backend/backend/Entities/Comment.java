@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "comments")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -21,10 +23,12 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "blog_id", nullable = false)
+    @JsonIgnore
     private Blog blog;
 
     @Column(nullable = false, updatable = false)

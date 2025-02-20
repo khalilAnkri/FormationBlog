@@ -50,8 +50,9 @@ public class GlobalExceptionHandler {
      @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
      public ResponseEntity<?> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
          return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                 .body(Collections.singletonMap("error", "Authentication is required to access this resource."));
+                 .body(Collections.singletonMap("error", ex.getMessage()));  // ✅ Show real error message
      }
+     
 
        // ❌ Handle Unauthorized Actions
     @ExceptionHandler(UnauthorizedActionException.class)
@@ -59,6 +60,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("error", ex.getMessage()));
     }
 
+
+
+    @ExceptionHandler(PendingUserException.class)
+    public ResponseEntity<String> handlePendingUserException(PendingUserException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RejectedUserException.class)
+    public ResponseEntity<String> handleRejectedUserException(RejectedUserException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
  
 
     

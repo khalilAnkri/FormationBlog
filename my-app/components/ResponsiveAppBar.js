@@ -20,12 +20,14 @@ import Image from "next/image";
 import { theme } from "@/config/Theme";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../context/store/authSlice";
+import { getAuthToken, decodeToken } from "../backend/JwtUtils";
 
 const settings = ["Account", "Logout"];
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [scrolled, setScrolled] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -38,8 +40,20 @@ function ResponsiveAppBar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+ 
+  React.useEffect(() => {
+    const token = getAuthToken();
+    if (token) {
+      const decoded = decodeToken(token);
+      setIsAdmin(decoded?.role === "ADMIN");
+    } else {
+      setIsAdmin(false);  
+    }
+  }, [isLoggedIn]);  
+
   const handleLogout = () => {
-    dispatch(logout()); // Dispatch the logout action
+    dispatch(logout());
+    setIsAdmin(false);  
     router.push("/");
   };
 
@@ -72,6 +86,13 @@ function ResponsiveAppBar() {
             <Button component={Link} href="/acceuil" sx={{ color: theme.palette.secondary.main, fontWeight: 700, fontFamily: "monospace", fontSize: "1.2rem" }}>
               Blog
             </Button>
+
+            {/* ✅ Show "Administration" only if user is an admin */}
+            {isAdmin && (
+              <Button component={Link} href="/administration" sx={{ color: theme.palette.secondary.main, fontWeight: 700, fontFamily: "monospace", fontSize: "1.2rem" }}>
+                Administration
+              </Button>
+            )}
           </Box>
 
           <Box sx={{ flexGrow: 1 }} />

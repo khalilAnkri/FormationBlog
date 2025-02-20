@@ -9,4 +9,5 @@ public interface BlogService {
     BlogDTO createBlog(Long userId, BlogDTO blogDTO);
     void deleteBlog(Long blogId);
     List<BlogDTO> getMyBlogs(Long userId);  
+    List<BlogDTO> getAllApprovedBlogs();
 }
