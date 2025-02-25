@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { theme } from "@/config/Theme";
+import {useTheme} from "@emotion/react";
 
 export default function MyBlogsPage() {
   const { data: myBlogs = [], isLoading, error } = useMyBlogDetails();  
@@ -38,7 +39,7 @@ export default function MyBlogsPage() {
     setNewTitle("");
     setNewDescription("");
   };
-
+  const theme = useTheme();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); 
   
     if (!isLoggedIn) {

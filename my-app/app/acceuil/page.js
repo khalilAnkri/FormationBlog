@@ -25,6 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { theme } from "@/config/Theme";
+import {useTheme} from "@emotion/react";
 
 export default function BlogPage() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -35,6 +36,7 @@ export default function BlogPage() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const theme = useTheme();
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
